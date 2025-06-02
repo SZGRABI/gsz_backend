@@ -65,4 +65,19 @@ class ProductRepositoryTest {
 
         assertThrows(DataIntegrityViolationException.class, () -> productRepository.save(p2));
     }
+
+    @Test
+    public void findByName() {
+        var p1 = new Product();
+        p1.setName("rohlik");
+        p1.setQuantityInStock(10);
+        p1.setPrice(BigDecimal.valueOf(9.99));
+        productRepository.saveAndFlush(p1);
+
+        Product rohlik = productRepository.findByName("rohlik");
+
+        assertThat(rohlik, not(nullValue()));
+        assertThat(rohlik.getName(), is("rohlik"));
+        assertThat(rohlik.getId(), is(notNullValue()));
+    }
 }
