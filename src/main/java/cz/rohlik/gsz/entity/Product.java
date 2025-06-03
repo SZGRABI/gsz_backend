@@ -1,6 +1,5 @@
 package cz.rohlik.gsz.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +14,6 @@ import java.util.List;
 @Builder
 public class Product {
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
