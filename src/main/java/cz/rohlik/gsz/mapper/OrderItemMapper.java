@@ -3,6 +3,7 @@ package cz.rohlik.gsz.mapper;
 import cz.rohlik.gsz.dto.OrderItemDTO;
 import cz.rohlik.gsz.entity.OrderItem;
 import cz.rohlik.gsz.repository.ProductRepository;
+import cz.rohlik.gsz.exception.ProductNotFoundException;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -21,8 +22,8 @@ public abstract class OrderItemMapper {
 
     @Mappings({
             @Mapping(target = "product",
-                    expression = "java(productRepository.findByName(orderItemDTO.getProductName()))"),
+                    expression = "java(productRepository.findByName(orderItemDTO.getProductName()).orElseThrow(() -> new ProductNotFoundException(\"Product:%s does not exist.\".formatted(orderItemDTO.getProductName()))))"),
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "order", ignore = true)})
-    abstract OrderItem toEntity(OrderItemDTO orderItemDTO);
+    abstract OrderItem toEntity(OrderItemDTO orderItemDTO) throws ProductNotFoundException;
 }

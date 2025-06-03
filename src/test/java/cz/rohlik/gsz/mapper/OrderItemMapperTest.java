@@ -4,6 +4,7 @@ import cz.rohlik.gsz.dto.OrderItemDTO;
 import cz.rohlik.gsz.entity.Order;
 import cz.rohlik.gsz.entity.OrderItem;
 import cz.rohlik.gsz.entity.Product;
+import cz.rohlik.gsz.exception.ProductNotFoundException;
 import cz.rohlik.gsz.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,9 +17,11 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,8 +84,8 @@ class OrderItemMapperTest {
     }
 
     @Test
-    void toEntity() throws NoSuchFieldException, IllegalAccessException {
-        when(productRepository.findByName(PRODUCT_NAME)).thenReturn(product);
+    void toEntity() {
+        when(productRepository.findByName(PRODUCT_NAME)).thenReturn(Optional.of(product));
 
         OrderItem resultEntity = orderItemMapper.toEntity(dto);
 
@@ -91,5 +94,16 @@ class OrderItemMapperTest {
         assertThat(resultEntity.getQuantity(), is(entity.getQuantity()));
         assertThat(resultEntity.getProduct(), is(entity.getProduct()));
         assertThat(resultEntity.getOrder(), nullValue());
+    }
+
+    @Test
+    void toEntity_ProductNotFound() {
+        when(productRepository.findByName(PRODUCT_NAME)).thenReturn(Optional.empty());
+
+        ProductNotFoundException thrown = assertThrows(ProductNotFoundException.class, () -> orderItemMapper.toEntity(dto));
+
+        assertThat(thrown, notNullValue());
+        assertThat(thrown.getMessage(), notNullValue());
+        assertThat(thrown.getMessage(), is("Product:%s does not exist.".formatted(PRODUCT_NAME)));
     }
 }
