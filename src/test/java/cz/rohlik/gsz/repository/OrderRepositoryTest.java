@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -183,6 +184,17 @@ class OrderRepositoryTest {
 
         assertThat(thrown, notNullValue());
         assertThat(thrown.getMessage(), containsString(Order.PAY_ERROR_MESSAGE.formatted(order.getStatus())));
+    }
+
+    @Test
+    public void findAllByStatusAndExpiresAtBefore() {
+        orderRepository.saveAndFlush(Order.builder().status(OrderStatus.NEW)
+                .expiresAt(LocalDateTime.now().minusMinutes(2))
+                .build());
+
+        List<Order> orders = orderRepository.findAllByStatusAndExpiresAtBefore(OrderStatus.NEW, LocalDateTime.now());
+
+        assertThat(orders.size(), is(1));
     }
 
 }
