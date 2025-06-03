@@ -1,5 +1,17 @@
 # Gabor Szabo's Case Study for Rohlik
 
+
+## Getting Started
+
+1. **Clone**
+   ```bash
+    git clone https://github.com/SZGRABI/gsz_backend.git
+    cd gsz_backend
+2. **Compile and start**
+    ```bash
+    ./mvnw clean install
+    ./mvnw spring-boot:run
+
 ### REST documentation
 
 http://localhost:8080/swagger-ui/index.html
