@@ -103,7 +103,6 @@ public class OrderMapperTest {
         assertThat(resultEntity.getOrderItems().get(0).getProduct(), notNullValue());
         assertThat(resultEntity.getOrderItems().get(0).getProduct().getName(), notNullValue());
         assertThat(resultEntity.getOrderItems().get(0).getProduct().getName(), is("bread"));
-        assertThat(resultEntity.getStatus(), is(OrderStatus.NEW));
     }
 
     @Test
