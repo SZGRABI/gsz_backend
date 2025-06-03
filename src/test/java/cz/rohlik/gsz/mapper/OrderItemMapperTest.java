@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,16 +62,9 @@ class OrderItemMapperTest {
 
     }
 
-    private static void setEntityId(Long id) throws NoSuchFieldException, IllegalAccessException {
-        Field idField = entity.getClass().getDeclaredField("id");
-        if (idField.trySetAccessible()) {
-            idField.set(entity, id);
-        }
-    }
-
     @Test
     void toDTO() throws NoSuchFieldException, IllegalAccessException {
-        setEntityId(1L);
+        entity.setId(1L);
 
         OrderItemDTO resultDto = orderItemMapper.toDTO(entity);
 

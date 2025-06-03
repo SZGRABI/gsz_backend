@@ -16,6 +16,7 @@ class ProductMapperTest {
     @Test
     void toDTO() {
         Product entity = new Product();
+        entity.setId(2L);
         entity.setPrice(BigDecimal.valueOf(1.23));
         entity.setName("Bread");
         entity.setQuantityInStock(12);
@@ -24,6 +25,7 @@ class ProductMapperTest {
 
         assertThat(resultDto, notNullValue());
         assertThat(resultDto.getId(), notNullValue());
+        assertThat(resultDto.getId(), is(entity.getId()));
         assertThat(resultDto.getName(), notNullValue());
         assertThat(resultDto.getName(), is(entity.getName()));
         assertThat(resultDto.getPrice(), notNullValue());
