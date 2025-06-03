@@ -48,6 +48,9 @@ public class Order {
         if (this.expiresAt == null) {
             this.expiresAt = this.createdDate.plusMinutes(30);
         }
+        if (this.status == null) {
+            status = OrderStatus.NEW;
+        }
     }
 
     public void addOrderItem(OrderItem item) {

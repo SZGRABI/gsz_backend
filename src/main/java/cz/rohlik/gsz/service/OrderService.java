@@ -1,9 +1,10 @@
 package cz.rohlik.gsz.service;
 
 import cz.rohlik.gsz.dto.OrderDTO;
+import jakarta.validation.Valid;
 
 public interface OrderService {
-    OrderDTO createOrder(OrderDTO orderDTO);
+    OrderDTO createOrder(@Valid OrderDTO orderDTO);
 
     OrderDTO cancelOrder(Long orderId);
 
