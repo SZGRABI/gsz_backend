@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:3000", "https://702b8590adb744f69d71f146fdb341b8-1f375e06a3da481a9276fcb8d.fly.dev"})
 @RequestMapping("/api/product")
 public class ProductController {
     private final ProductService productService;
