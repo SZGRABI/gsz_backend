@@ -1,15 +1,13 @@
 package cz.rohlik.gsz.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @ToString(exclude = {"order", "product"})
 public class OrderItem {
     @Id

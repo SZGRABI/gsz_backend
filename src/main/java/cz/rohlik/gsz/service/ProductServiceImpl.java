@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO updateProduct(ProductDTO productUpdateDTO) {
+    public ProductDTO updateProduct(@Valid ProductDTO productUpdateDTO) {
         if (productUpdateDTO.getId() == null) {
             throw new IllegalArgumentException("Product id cannot be null");
         }

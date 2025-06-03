@@ -98,4 +98,5 @@ class OrderItemMapperTest {
         assertThat(thrown.getMessage(), notNullValue());
         assertThat(thrown.getMessage(), is("Product:%s does not exist.".formatted(PRODUCT_NAME)));
     }
+
 }

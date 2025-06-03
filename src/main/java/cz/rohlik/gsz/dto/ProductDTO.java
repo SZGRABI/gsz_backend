@@ -19,8 +19,7 @@ public class ProductDTO {
     @NotBlank(message = "Name must not be blank")
     String name;
 
-    @NotNull(message = "Quantity cannot be null")
-    @Min(value = 0, message = "Quantity must be ≥ 0")
+    @Min(value = 1, message = "Quantity must be > 0")
     int quantityInStock;
 
     @NotNull(message = "Price cannot be null")
