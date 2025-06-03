@@ -65,7 +65,8 @@ class ProductServiceImplTest {
         OrderItem orderItem = new OrderItem();
         orderItem.setProduct(product);
         orderItem.setQuantity(3);
-        orderItem.setOrder(new Order(1L, OrderStatus.NEW, orderItems));
+        Order order = Order.builder().id(1L).status(OrderStatus.NEW).orderItems(orderItems).build();
+        orderItem.setOrder(order);
         orderItems.add(orderItem);
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 

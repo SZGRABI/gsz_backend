@@ -13,6 +13,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 class OrderRepositoryTest {
@@ -34,14 +35,12 @@ class OrderRepositoryTest {
 
     @Test
     void saveOrderWithItems() {
-        // Arrange: create and save a Product
         Product product = new Product();
         product.setName("Bread");
         product.setQuantityInStock(100);
         product.setPrice(BigDecimal.valueOf(79.19));
         product = productRepository.saveAndFlush(product);
 
-        // Arrange: create OrderItems linked to the Product
         OrderItem item1 = new OrderItem();
         item1.setQuantity(2);
         item1.setProduct(product);
@@ -50,36 +49,31 @@ class OrderRepositoryTest {
         item2.setQuantity(3);
         item2.setProduct(product);
 
-        // Arrange: create Order and add items
         Order order = new Order();
         order.addOrderItem(item1);
         order.addOrderItem(item2);
 
-        // Act: save the order
         order = orderRepository.saveAndFlush(order);
 
-        // Assert: order ID assigned and items persisted
         assertThat(order.getId(), notNullValue());
         List<Order> orders = orderRepository.findAll();
         assertThat(orders, hasSize(1));
 
         Order actualOrder = orders.get(0);
+        assertThat(actualOrder.getExpiresAt(), notNullValue());
         assertThat(actualOrder.getOrderItems(), hasSize(2));
 
-        // Assert: each item has ID and correct relationships
-        for (OrderItem oi : actualOrder.getOrderItems()) {
-            assertThat(oi.getId(), notNullValue());
-            assertThat(oi.getProduct().getId(), is(product.getId()));
-            assertThat(oi.getQuantity(), greaterThan(0));
+        for (OrderItem orderItem : actualOrder.getOrderItems()) {
+            assertThat(orderItem.getId(), notNullValue());
+            assertThat(orderItem.getProduct().getId(), is(product.getId()));
+            assertThat(orderItem.getQuantity(), greaterThan(0));
         }
 
-        // Also verify items exist in the repository
         assertThat(orderItemRepository.findAll(), hasSize(2));
     }
 
     @Test
     void orphanRemovalRemovesItem() {
-        // Arrange: save a product and an order with two items
         Product p = new Product();
         p.setName("Beer");
         p.setQuantityInStock(50);
@@ -98,21 +92,19 @@ class OrderRepositoryTest {
         o.addOrderItem(i2);
         o = orderRepository.saveAndFlush(o);
 
-        // Act: remove one item and flush
         OrderItem toRemove = o.getOrderItems().get(0);
         o.removeOrderItem(toRemove);
         orderRepository.saveAndFlush(o);
 
-        // Assert: only one item remains
+
         Order refreshed = orderRepository.findById(o.getId()).orElseThrow();
         assertThat(refreshed.getOrderItems(), hasSize(1));
-        // Ensure orphaned item is deleted
+
         assertThat(orderItemRepository.findById(toRemove.getId()).isPresent(), is(false));
     }
 
     @Test
     void deleteOrderAlsoDeletesItems() {
-        // Arrange: create product and an order
         Product prod = new Product();
         prod.setName("Milk");
         prod.setQuantityInStock(20);
@@ -130,25 +122,21 @@ class OrderRepositoryTest {
         Long itemId = oi.getId();
         Long orderId = ord.getId();
 
-        // Act: delete the order
         orderRepository.deleteById(orderId);
         orderRepository.flush();
 
-        // Assert: order removed and its item deleted too
         assertThat(orderRepository.findById(orderId).isPresent(), is(false));
         assertThat(orderItemRepository.findById(itemId).isPresent(), is(false));
     }
 
     @Test
     void payOrderChangesStatusToPaid() {
-        // Arrange: create and save a product
         Product p = new Product();
         p.setName("Beer");
         p.setQuantityInStock(5);
         p.setPrice(BigDecimal.valueOf(52.24));
         productRepository.saveAndFlush(p);
 
-        // Arrange: build an order with one item
         OrderItem item = new OrderItem();
         item.setProduct(p);
         item.setQuantity(2);
@@ -157,21 +145,17 @@ class OrderRepositoryTest {
         order.addOrderItem(item);
         order = orderRepository.saveAndFlush(order);
 
-        // Pre-condition: status must be NEW
         assertThat(order.getStatus(), is(OrderStatus.NEW));
 
-        // Act: mark as paid and save
         order.pay();
         order = orderRepository.saveAndFlush(order);
 
-        // Assert: status is now PAID
         Order reloaded = orderRepository.findById(order.getId()).orElseThrow();
         assertThat(reloaded.getStatus(), is(OrderStatus.PAID));
     }
 
     @Test
     void cannotPayTwice() {
-        // Arrange (similar to above)
         Product p = new Product();
         p.setName("Beer");
         p.setQuantityInStock(3);
@@ -186,22 +170,19 @@ class OrderRepositoryTest {
         order.addOrderItem(item);
         order = orderRepository.saveAndFlush(order);
 
-        // Act: first payment
         order.pay();
         order = orderRepository.saveAndFlush(order);
 
-        // Attempt to pay again: should throw IllegalStateException
         Order alreadyPaid = orderRepository.findById(order.getId()).orElseThrow();
         assertThat(alreadyPaid.getStatus(), is(OrderStatus.PAID));
 
-        try {
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
             alreadyPaid.pay();
             orderRepository.saveAndFlush(alreadyPaid);
-            throw new AssertionError("Expected IllegalStateException");
-        } catch (IllegalStateException ex) {
-            // expected
-            assertThat(ex.getMessage(), containsString(Order.PAY_ERROR_MESSAGE.formatted(order.getStatus())));
-        }
+        });
+
+        assertThat(thrown, notNullValue());
+        assertThat(thrown.getMessage(), containsString(Order.PAY_ERROR_MESSAGE.formatted(order.getStatus())));
     }
 
 }

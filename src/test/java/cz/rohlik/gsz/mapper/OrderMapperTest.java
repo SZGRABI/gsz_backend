@@ -55,10 +55,10 @@ public class OrderMapperTest {
 
     @Test
     void toDTO() {
-        OrderItemDTO breadDto = new OrderItemDTO();
-        breadDto.setProductName("bread");
-        breadDto.setQuantity(3);
-        breadDto.setId(4L);
+        OrderItemDTO breadDto = OrderItemDTO.builder()
+                .id(4L)
+                .productName("bread")
+                .quantity(3).build();
 
         when(orderItemMapper.toDTO(Mockito.any(OrderItem.class)))
                 .thenReturn(breadDto);

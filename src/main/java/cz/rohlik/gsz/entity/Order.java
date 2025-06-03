@@ -2,9 +2,11 @@ package cz.rohlik.gsz.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "orders")
 public class Order {
     public static final String PAY_ERROR_MESSAGE = "Cannot pay an order that is %s";
@@ -30,6 +33,18 @@ public class Order {
             orphanRemoval = true
     )
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdDate;
+
+    @Column(nullable = false)
+    private LocalDateTime expiresAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = LocalDateTime.now();
+        expiresAt = createdDate.plusMinutes(30);
+    }
 
     public void addOrderItem(OrderItem item) {
         item.setOrder(this);
