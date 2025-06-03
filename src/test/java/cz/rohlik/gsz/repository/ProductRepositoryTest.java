@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
@@ -21,7 +22,7 @@ class ProductRepositoryTest {
     @Test
     public void findAllEmpty() {
         List<Product> products = productRepository.findAll();
-        assertThat(products, not(nullValue()));
+        assertThat(products, notNullValue());
         assertThat(products, is(empty()));
     }
 
@@ -39,8 +40,8 @@ class ProductRepositoryTest {
         assertThat(products, hasSize(1));
 
         Product actualProduct = products.get(0);
-        assertThat(actualProduct, not(nullValue()));
-        assertThat(actualProduct.getId(), not(nullValue()));
+        assertThat(actualProduct, notNullValue());
+        assertThat(actualProduct.getId(), notNullValue());
         assertThat(actualProduct.getId(), not(0));
         assertThat(actualProduct.getName(), is(product.getName()));
         assertThat(actualProduct.getPrice(), comparesEqualTo(product.getPrice()));
@@ -74,10 +75,25 @@ class ProductRepositoryTest {
         p1.setPrice(BigDecimal.valueOf(9.99));
         productRepository.saveAndFlush(p1);
 
-        Product rohlik = productRepository.findByName("rohlik");
+        Product rohlik = productRepository.findByName("rohlik")
+                .orElse(null);
 
         assertThat(rohlik, not(nullValue()));
         assertThat(rohlik.getName(), is("rohlik"));
-        assertThat(rohlik.getId(), is(notNullValue()));
+        assertThat(rohlik.getId(), notNullValue());
+    }
+
+    @Test
+    public void findByName_NotFound() {
+        var p1 = new Product();
+        p1.setName("rohlik");
+        p1.setQuantityInStock(10);
+        p1.setPrice(BigDecimal.valueOf(9.99));
+        productRepository.saveAndFlush(p1);
+
+        Product bread = productRepository.findByName("bread")
+                .orElse(null);
+
+        assertThat(bread, nullValue());
     }
 }
