@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +36,10 @@ public class OrderMapperTest {
     private static Order entity;
 
     @BeforeEach
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public void setUp() {
         entity = new Order();
         entity.setStatus(OrderStatus.CANCELLED);
-        setEntityId(1L);
+        entity.setId(1L);
 
         BREAD.setName("bread");
         BREAD.setQuantityInStock(100);
@@ -52,13 +51,6 @@ public class OrderMapperTest {
         breadOrder.setProduct(BREAD);
         orderItems.add(breadOrder);
         entity.setOrderItems(orderItems);
-    }
-
-    static void setEntityId(Long id) throws NoSuchFieldException, IllegalAccessException {
-        Field idField = entity.getClass().getDeclaredField("id");
-        if (idField.trySetAccessible()) {
-            idField.set(entity, id);
-        }
     }
 
     @Test

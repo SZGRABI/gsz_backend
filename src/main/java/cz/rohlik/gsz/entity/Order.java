@@ -1,7 +1,9 @@
 package cz.rohlik.gsz.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +16,6 @@ import java.util.List;
 public class Order {
     public static final String PAY_ERROR_MESSAGE = "Cannot pay an order that is %s";
 
-    @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

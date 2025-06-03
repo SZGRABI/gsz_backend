@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class Product {
-    @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
