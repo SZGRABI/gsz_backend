@@ -42,8 +42,12 @@ public class Order {
 
     @PrePersist
     protected void onCreate() {
-        createdDate = LocalDateTime.now();
-        expiresAt = createdDate.plusMinutes(30);
+        if (this.createdDate == null) {
+            this.createdDate = LocalDateTime.now();
+        }
+        if (this.expiresAt == null) {
+            this.expiresAt = this.createdDate.plusMinutes(30);
+        }
     }
 
     public void addOrderItem(OrderItem item) {
